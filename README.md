@@ -2,6 +2,9 @@
 
 A secure, self-hosted API key management service for OpenAI, Anthropic, and Google Gemini. This allows your users to securely store their AI API keys and your application to access them when needed.
 
+🌐 **Website:** [byoai.dev](http://byoai.dev/)  
+📝 **Hosted Version Waitlist:** [Join the waitlist](https://forms.gle/Vzyb4K95i3xaWzar5)
+
 ## 🚀 Quick Start
 
 **Prefer Docker?** Jump to [One-Click Docker Deployment](#-one-click-docker-deployment) ⬇️
