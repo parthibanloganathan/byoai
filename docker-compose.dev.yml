@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # MongoDB Database (same as production)
+  mongodb:
+    image: mongo:7.0
+    container_name: api-key-vault-db-dev
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: api-key-vault
+    volumes:
+      - mongodb_dev_data:/data/db
+    networks:
+      - api-key-vault-dev-network
+
+  # Backend API Server (development with hot reload)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: api-key-vault-api-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongodb:27017/api-key-vault
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-ae710c8987e61a1ffe8c760078c01b3310a2081db325041fa323128a2f8c1fb7}
+      - CORS_ORIGIN=http://localhost:3001,http://localhost
+    volumes:
+      - ./src:/app/src
+      - ./package.json:/app/package.json
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./nodemon.json:/app/nodemon.json
+    depends_on:
+      - mongodb
+    networks:
+      - api-key-vault-dev-network
+
+  # Frontend React App (development with hot reload)
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    container_name: api-key-vault-ui-dev
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000/api
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./client/src:/app/src
+      - ./client/public:/app/public
+      - ./client/package.json:/app/package.json
+    depends_on:
+      - backend
+    networks:
+      - api-key-vault-dev-network
+
+networks:
+  api-key-vault-dev-network:
+    driver: bridge
+
+volumes:
+  mongodb_dev_data:
+    driver: local

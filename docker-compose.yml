@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: api-key-vault-db
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: api-key-vault
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - api-key-vault-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # Backend API Server
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-key-vault-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongodb:27017/api-key-vault
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-your-32-char-encryption-key-here-change-this}
+      - CORS_ORIGIN=http://localhost:3001,http://localhost
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - api-key-vault-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Frontend React App
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: api-key-vault-ui
+    restart: unless-stopped
+    ports:
+      - "3001:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000/api
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - api-key-vault-network
+
+networks:
+  api-key-vault-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local

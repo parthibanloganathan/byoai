@@ -1,0 +1,56 @@
+# Dependencies
+node_modules
+client/node_modules
+
+# Build outputs
+dist
+client/build
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+test
+tests
+*.test.js
+*.test.ts
+
+# Development files
+.claude
+docker-compose.dev.yml
+Dockerfile.dev
+client/Dockerfile.dev

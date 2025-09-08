@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Key Manager - Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .demo-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 1200px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .demo-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            text-align: center;
+        }
+        .demo-header h1 {
+            margin: 0 0 10px;
+            color: #2d3748;
+            font-size: 24px;
+        }
+        .demo-header p {
+            margin: 0;
+            color: #718096;
+            font-size: 16px;
+        }
+        .iframe-container {
+            flex: 1;
+            position: relative;
+        }
+        .api-manager-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 0 0 12px 12px;
+        }
+        .controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+        .btn {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .btn:hover {
+            background: #3182ce;
+        }
+        .btn.secondary {
+            background: #718096;
+        }
+        .btn.secondary:hover {
+            background: #4a5568;
+        }
+        .email-info {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #234e52;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🔐 API Key Manager</h1>
+            <p>Embed this component in your application to let users manage their AI API keys</p>
+            <div class="email-info">
+                <strong>Demo User:</strong> user@example.com
+            </div>
+        </div>
+        <div class="iframe-container">
+            <div class="controls">
+                <button class="btn secondary" onclick="reloadFrame()">Reload</button>
+                <button class="btn" onclick="openInNewTab()">Open in New Tab</button>
+            </div>
+            <iframe 
+                id="apiManagerFrame"
+                class="api-manager-iframe"
+                src="http://localhost:3001?email=user@example.com"
+                title="API Key Manager">
+            </iframe>
+        </div>
+    </div>
+
+    <script>
+        function reloadFrame() {
+            document.getElementById('apiManagerFrame').src = document.getElementById('apiManagerFrame').src;
+        }
+
+        function openInNewTab() {
+            window.open('http://localhost:3001?email=user@example.com', '_blank');
+        }
+
+        // Listen for messages from the iframe (for future communication)
+        window.addEventListener('message', function(event) {
+            if (event.origin !== 'http://localhost:3001') return;
+            console.log('Message from API Manager:', event.data);
+        });
+    </script>
+</body>
+</html>
